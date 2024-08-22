@@ -1,0 +1,10 @@
+.idea/
+target/
+Cargo.lock
+**/*.rs.bk
+*.sublime-project
+.DS_Store
+.idea
+.vscode
+.gitconfig
+crates/bmbp_app_util

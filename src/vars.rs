@@ -1,0 +1,4 @@
+pub const BMBP_CURRENT_USER: &str = "_BMBP_CURRENT_USER";
+pub const BMBP_CURRENT_ORM: &str = "_BMBP_CURRENT_ORM";
+
+pub const BMBP_IGNORE_AUTH_VALID: &str = "_BMBP_IGNORE_AUTH_VALID";
