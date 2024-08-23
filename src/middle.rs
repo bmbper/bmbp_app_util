@@ -1,16 +1,20 @@
 use bmbp_auth::{BmbpAuthTokenUtil};
+use bmbp_ctx_vars::BMBP_CONTEXT_VARS;
 use bmbp_http_type::{BmbpResp, BmbpRespErr};
 use salvo::{Depot, FlowCtrl, handler, Request, Response};
-use crate::{BMBP_CURRENT_ORM, BMBP_CURRENT_USER, BMBP_IGNORE_AUTH_VALID, get_app_orm};
+use salvo::routing::{PathFilter, PathState};
+use crate::{BMBP_CURRENT_ORM, BMBP_CURRENT_USER, BMBP_IGNORE_AUTH_VALID, BMBP_WHITE_URLS, get_app_orm};
 
 
 #[handler]
 pub async fn auth_token_middle(req: &mut Request, depot: &mut Depot, resp: &mut Response, ctrl: &mut FlowCtrl) -> BmbpResp<()> {
-    let white_list = vec!["/login", "/bmbp/auth/login"];
-    // TODO 判断URL是否需要权限
-    let url = req.uri().path();
-    for white_url in white_list {
-        if white_url.starts_with(url) {
+    let white_urls =    (&*BMBP_CONTEXT_VARS).get_value::<String>(BMBP_WHITE_URLS.to_string());
+    let white_url_list:Vec<String> = white_urls.split(",").map(|s|s.to_string()).collect();
+    let req_url = req.uri().path();
+    let mut req_path_state = PathState::new(req_url);
+    for white_url in white_url_list {
+        let white_path = PathFilter::new(white_url);
+        if white_path.detect(&mut req_path_state) {
             depot.insert(BMBP_IGNORE_AUTH_VALID, true);
             return Ok(());
         }

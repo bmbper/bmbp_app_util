@@ -1,6 +1,6 @@
 [package]
 name = "bmbp_app_util"
-version = "0.0.1"
+version = "0.0.2"
 edition.workspace = true
 authors.workspace = true
 description.workspace = true
@@ -13,7 +13,8 @@ documentation.workspace = true
 [dependencies]
 bmbp_rdbc_orm = { workspace = true }
 bmbp_auth = { workspace = true }
-bmbp_http_type = {workspace=true}
+bmbp_http_type = { workspace = true }
+bmbp_ctx_vars = { workspace = true }
 salvo = { workspace = true }
 
 
