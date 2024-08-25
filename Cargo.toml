@@ -1,20 +1,32 @@
 [package]
 name = "bmbp_app_util"
 version = "0.0.2"
-edition.workspace = true
-authors.workspace = true
-description.workspace = true
-license.workspace = true
-readme.workspace = true
-homepage.workspace = true
-repository.workspace = true
-documentation.workspace = true
-
+edition = "2021"
+authors = ["bmbp<rs_bmbp.163.com>"]
+description = "BMBP CONFIG MODULE"
+license = "MIT"
+readme = "README.md"
+homepage = "https://github.com/bmbper/bmbp_app_util"
+repository = "https://github.com/bmbper/bmbp_app_util"
+documentation = "https://github.com/bmbper/bmbp_app_util"
 [dependencies]
-bmbp_rdbc_orm = { workspace = true }
-bmbp_auth = { workspace = true }
-bmbp_http_type = { workspace = true }
-bmbp_ctx_vars = { workspace = true }
-salvo = { workspace = true }
-
+bmbp_util = "0.0.3"
+# 静态资源
+bmbp_lib_ui = "0.1.5"
+# 认证信息
+bmbp_auth = "0.0.2"
+# 全局参数
+bmbp_ctx_vars = "0.1.1"
+# http返回状态
+bmbp_http_type = "0.0.6"
+# 数据库类型
+bmbp_rdbc_type = "0.2.5"
+bmbp_rdbc_orm = "0.2.5"
+salvo = { version = "0.71.1", features = [
+    "default",
+    "serve-static",
+    "cors",
+    "size-limiter",
+    "logging",
+] }
 
