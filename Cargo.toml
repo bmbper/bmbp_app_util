@@ -1,6 +1,6 @@
 [package]
 name = "bmbp_app_util"
-version = "0.0.2"
+version = "0.0.3"
 edition = "2021"
 authors = ["bmbp<rs_bmbp.163.com>"]
 description = "BMBP CONFIG MODULE"
@@ -10,7 +10,7 @@ homepage = "https://github.com/bmbper/bmbp_app_util"
 repository = "https://github.com/bmbper/bmbp_app_util"
 documentation = "https://github.com/bmbper/bmbp_app_util"
 [dependencies]
-bmbp_util = "0.0.3"
+bmbp_util = "0.0.6"
 # 静态资源
 bmbp_lib_ui = "0.1.5"
 # 认证信息
