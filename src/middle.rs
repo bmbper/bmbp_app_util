@@ -1,15 +1,21 @@
-use bmbp_auth::{BmbpAuthTokenUtil};
+use crate::{
+    get_app_orm, BMBP_CURRENT_ORM, BMBP_CURRENT_USER, BMBP_IGNORE_AUTH_VALID, BMBP_WHITE_URLS,
+};
+use bmbp_auth::BmbpAuthTokenUtil;
 use bmbp_ctx_vars::BMBP_CONTEXT_VARS;
 use bmbp_http_type::{BmbpResp, BmbpRespErr};
-use salvo::{Depot, FlowCtrl, handler, Request, Response};
 use salvo::routing::{PathFilter, PathState};
-use crate::{BMBP_CURRENT_ORM, BMBP_CURRENT_USER, BMBP_IGNORE_AUTH_VALID, BMBP_WHITE_URLS, get_app_orm};
-
+use salvo::{handler, Depot, FlowCtrl, Request, Response};
 
 #[handler]
-pub async fn auth_token_middle(req: &mut Request, depot: &mut Depot, resp: &mut Response, ctrl: &mut FlowCtrl) -> BmbpResp<()> {
-    let white_urls =    (&*BMBP_CONTEXT_VARS).get_value::<String>(BMBP_WHITE_URLS.to_string());
-    let white_url_list:Vec<String> = white_urls.split(",").map(|s|s.to_string()).collect();
+pub async fn auth_token_middle(
+    req: &mut Request,
+    depot: &mut Depot,
+    _resp: &mut Response,
+    ctrl: &mut FlowCtrl,
+) -> BmbpResp<()> {
+    let white_urls = (&*BMBP_CONTEXT_VARS).get_value::<String>(BMBP_WHITE_URLS.to_string());
+    let white_url_list: Vec<String> = white_urls.split(",").map(|s| s.to_string()).collect();
     let req_url = req.uri().path();
     let mut req_path_state = PathState::new(req_url);
     for white_url in white_url_list {
@@ -28,11 +34,17 @@ pub async fn auth_token_middle(req: &mut Request, depot: &mut Depot, resp: &mut 
                         Ok(())
                     } else {
                         ctrl.skip_rest();
-                        Err(BmbpRespErr::err(Some("AUTH".to_string()), Some("Token校验失败[token无效]".to_string())))
+                        Err(BmbpRespErr::err(
+                            Some("AUTH".to_string()),
+                            Some("Token校验失败[token无效]".to_string()),
+                        ))
                     }
                 } else {
                     ctrl.skip_rest();
-                    Err(BmbpRespErr::err(Some("AUTH".to_string()), Some("Token校验失败[未取到校验结果]".to_string())))
+                    Err(BmbpRespErr::err(
+                        Some("AUTH".to_string()),
+                        Some("Token校验失败[未取到校验结果]".to_string()),
+                    ))
                 }
             }
             Err(err) => {
@@ -42,17 +54,27 @@ pub async fn auth_token_middle(req: &mut Request, depot: &mut Depot, resp: &mut 
                     "".to_string()
                 };
                 ctrl.skip_rest();
-                Err(BmbpRespErr::err(Some("AUTH".to_string()), Some(format!("Token校验失败[{}]", msg))))
+                Err(BmbpRespErr::err(
+                    Some("AUTH".to_string()),
+                    Some(format!("Token校验失败[{}]", msg)),
+                ))
             }
         }
     } else {
         ctrl.skip_rest();
-        Err(BmbpRespErr::err(Some("AUTH".to_string()), Some("未登录".to_string())))
+        Err(BmbpRespErr::err(
+            Some("AUTH".to_string()),
+            Some("未登录".to_string()),
+        ))
     };
 }
 
 #[handler]
-pub async fn auth_user_middle(req: &mut Request, depot: &mut Depot, ctrl: &mut FlowCtrl) -> BmbpResp<()> {
+pub async fn auth_user_middle(
+    req: &mut Request,
+    depot: &mut Depot,
+    ctrl: &mut FlowCtrl,
+) -> BmbpResp<()> {
     if let Some(token) = req.header::<String>("Authorization") {
         let token = token.replace("Bearer ", "");
         match BmbpAuthTokenUtil::get_token_user(token).await {
@@ -64,9 +86,7 @@ pub async fn auth_user_middle(req: &mut Request, depot: &mut Depot, ctrl: &mut F
             Err(err) => {
                 let ignore_auth_valid = match depot.get::<bool>(BMBP_IGNORE_AUTH_VALID) {
                     Ok(b) => b.clone(),
-                    Err(_) => {
-                        false
-                    }
+                    Err(_) => false,
                 };
                 let msg = if let Some(msg) = err.get_msg() {
                     msg.clone()
@@ -78,7 +98,10 @@ pub async fn auth_user_middle(req: &mut Request, depot: &mut Depot, ctrl: &mut F
                     Ok(())
                 } else {
                     ctrl.skip_rest();
-                    Err(BmbpRespErr::err(Some("AUTH".to_string()), Some(msg.to_string())))
+                    Err(BmbpRespErr::err(
+                        Some("AUTH".to_string()),
+                        Some(msg.to_string()),
+                    ))
                 };
             }
         }
